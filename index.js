@@ -111,7 +111,7 @@ app.put('/parcours/:id', async (req, res) => {
   const { date, experience, picture } = req.body;
   const { id } = req.params;
   await db.query(
-    `UPDATE realisations
+    `UPDATE parcours
     SET date=?, experience=?, picture=?
     WHERE id=?
     `,
@@ -131,6 +131,68 @@ app.delete('/parcours/:id', async (req, res) => {
   res.status(204).send('Tu as supprimé un parcours');
 });
 
+// Routes bénévoles
+
+app.get('/benevole', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM benevole');
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(404).send('Ho nion ¯(°_o)/¯ ');
+  }
+});
+
+app.get('/benevole/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [parcour] = await db.query(
+      `SELECT id, picture, listOne, listTwo, listThree, listFour, listFive 
+    FROM benevole
+    WHERE id =? `,
+      [id]
+    );
+    if (parcour.length) res.json(parcour);
+    else throw new Error('Pas d expériences bénévoles trouvées');
+  } catch (err) {
+    console.warn(err);
+    res.status(404).send('ERROR');
+  }
+});
+
+app.post('/benevole', async (req, res) => {
+  const { picture, listOne, listTwo, listThree, listFour, listFive } =
+    await req.body;
+  await db.query(
+    `INSERT INTO benevole (picture, listOne, listTwo, listThree, listFour, listFive)
+    VALUES (?,?,?)`,
+    [picture, listOne, listTwo, listThree, listFour, listFive]
+  );
+  res.status(204).send('Tu as ajouté un nouveau parcours !');
+});
+
+app.put('/benevole/:id', async (req, res) => {
+  const { picture, listOne, listTwo, listThree, listFour, listFive } = req.body;
+  const { id } = req.params;
+  await db.query(
+    `UPDATE benevole
+    SET picture=?, listOne=?, listTwo=?, listThree=?, listFour=?, listFive=?
+    WHERE id=?
+    `,
+    [picture, listOne, listTwo, listThree, listFour, listFive, id]
+  );
+  res.status(204).send('Tu as mis à jour cette expérience personnelle');
+});
+
+app.delete('/benevole/:id', async (req, res) => {
+  const { id } = req.params;
+  await db.query(
+    ` DELETE FROM benevole
+    WHERE id=?
+    `,
+    [id]
+  );
+  res.status(204).send('Tu as supprimé une expérience personnelle');
+});
 app.use('/', (req, res) => {
   res.status(404).send('Route not found !');
 });
