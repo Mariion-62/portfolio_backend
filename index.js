@@ -22,7 +22,7 @@ app.get('/realisations/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const [realisation] = await db.query(
-      `SELECT id, title, picture, content
+      `SELECT id, title, picture, content, linkGithub, linkSite, problematique, group, time
     FROM realisations
     WHERE id =? `,
       [id]
@@ -36,24 +36,52 @@ app.get('/realisations/:id', async (req, res) => {
 });
 
 app.post('/realisations', async (req, res) => {
-  const { title, picture, content } = await req.body;
+  const {
+    title,
+    picture,
+    content,
+    linkGithub,
+    linkSite,
+    problematique,
+    group,
+    time,
+  } = await req.body;
   await db.query(
-    `INSERT INTO realisations (title, picture, content)
-    VALUES (?,?,?)`,
-    [title, picture, content]
+    `INSERT INTO realisations (title, picture, content, linkGithub, linkSite, problematique, group, time)
+    VALUES (?,?,?,?,?,?,?,?)`,
+    [title, picture, content, linkGithub, linkSite, problematique, group, time]
   );
   res.status(204).send('Tu as ajouté une nouvelle réalisation !');
 });
 
 app.put('/realisations/:id', async (req, res) => {
-  const { title, picture, content } = req.body;
+  const {
+    title,
+    picture,
+    content,
+    linkGithub,
+    linkSite,
+    problematique,
+    group,
+    time,
+  } = req.body;
   const { id } = req.params;
   await db.query(
     `UPDATE realisations
-    SET title=?, picture=?, content=?
+    SET title=?, picture=?, content=?, linkGithub=?, linkSite=?, problematique=?, group=?, time=?
     WHERE id=?
     `,
-    [title, picture, content, id]
+    [
+      title,
+      picture,
+      content,
+      linkGithub,
+      linkSite,
+      problematique,
+      group,
+      time,
+      id,
+    ]
   );
   res.status(204).send('Tu as mis à jour cette réalisations');
 });
@@ -66,7 +94,7 @@ app.delete('/realisations/:id', async (req, res) => {
     `,
     [id]
   );
-  res.status(204).send('Tu as supprimé une réalsation');
+  res.status(204).send('Tu as supprimé une réalisation');
 });
 
 // Routes parcours
@@ -145,13 +173,13 @@ app.get('/benevole', async (req, res) => {
 app.get('/benevole/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [parcour] = await db.query(
+    const [benevole] = await db.query(
       `SELECT id, picture, listOne, listTwo, listThree, listFour, listFive 
     FROM benevole
     WHERE id =? `,
       [id]
     );
-    if (parcour.length) res.json(parcour);
+    if (benevole.length) res.json(benevole);
     else throw new Error('Pas d expériences bénévoles trouvées');
   } catch (err) {
     console.warn(err);
@@ -193,6 +221,7 @@ app.delete('/benevole/:id', async (req, res) => {
   );
   res.status(204).send('Tu as supprimé une expérience personnelle');
 });
+
 app.use('/', (req, res) => {
   res.status(404).send('Route not found !');
 });
