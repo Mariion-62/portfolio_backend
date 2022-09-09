@@ -22,7 +22,7 @@ app.get('/realisations/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const [realisation] = await db.query(
-      `SELECT id, title, picture, content, linkGithub, linkSite, problematique, group, time
+      `SELECT id, title, picture, content, linkGithub, linkSite, problematique, group, time, linkGithubBack
     FROM realisations
     WHERE id =? `,
       [id]
@@ -45,11 +45,22 @@ app.post('/realisations', async (req, res) => {
     problematique,
     group,
     time,
+    linkGithubBack,
   } = await req.body;
   await db.query(
-    `INSERT INTO realisations (title, picture, content, linkGithub, linkSite, problematique, group, time)
-    VALUES (?,?,?,?,?,?,?,?)`,
-    [title, picture, content, linkGithub, linkSite, problematique, group, time]
+    `INSERT INTO realisations (title, picture, content, linkGithub, linkSite, problematique, group, time, linkGithubBack)
+    VALUES (?,?,?,?,?,?,?,?,?)`,
+    [
+      title,
+      picture,
+      content,
+      linkGithub,
+      linkSite,
+      problematique,
+      group,
+      time,
+      linkGithubBack,
+    ]
   );
   res.status(204).send('Tu as ajouté une nouvelle réalisation !');
 });
@@ -64,11 +75,12 @@ app.put('/realisations/:id', async (req, res) => {
     problematique,
     group,
     time,
+    linkGithubBack,
   } = req.body;
   const { id } = req.params;
   await db.query(
     `UPDATE realisations
-    SET title=?, picture=?, content=?, linkGithub=?, linkSite=?, problematique=?, group=?, time=?
+    SET title=?, picture=?, content=?, linkGithub=?, linkSite=?, problematique=?, group=?, time=?, linkGithubBack=?
     WHERE id=?
     `,
     [
@@ -80,6 +92,7 @@ app.put('/realisations/:id', async (req, res) => {
       problematique,
       group,
       time,
+      linkGithubBack,
       id,
     ]
   );
