@@ -114,7 +114,9 @@ app.delete('/realisations/:id', async (req, res) => {
 
 app.get('/parcours', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM parcours');
+    const [rows] = await db.query(
+      'SELECT * FROM parcours ORDER BY experience ASC'
+    );
     res.status(200).json(rows);
   } catch (err) {
     res.status(404).send('Ho nion ¯(°_o)/¯ ');
